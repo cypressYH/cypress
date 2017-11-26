@@ -10,7 +10,45 @@ Created on Sat Nov 18 21:37:16 2017
 import pandas as pd
 import time
 
-
+def checkHoliday(data) :   #假日!!!!!!!!
+    holiday = [0, 1, 7, 8, 9, 14, 15, 21, 22, 28, 29,
+               35, 36, 42, 43, 49, 50, 56, 57,
+               63, 64, 70, 71, 77, 78, 84, 85, 91,
+               92, 93, 96, 97, 103, 104, 110, 111, 116, 117, 118, 119, 120,
+               121, 124, 125, 131, 132, 139, 145, 146, 147, 148,
+               152, 153, 159, 160, 166, 167, 173, 174,
+               180, 181, 182, 183, 187, 188, 194, 195, 201, 202, 208, 209,
+               215, 216, 222, 223, 229, 230, 236, 237, 238, 239,
+               244, 250, 251, 257, 258, 264, 265,
+               271, 272, 278, 279, 285, 286, 292, 293, 299, 300,
+               306, 307, 313, 314, 320, 321, 327, 328,
+               334, 335, 341, 342, 348, 349, 355, 356,
+               363, 366, 369, 370, 371, 372, 376, 377, 383, 384, 390, 391,
+               397, 398, 404, 405, 411, 412, 418]
+    hdata = np.zeros((len(data), len(holiday)), int)
+    nhdata = np.zeros((len(data), len(data[0]) - len(holiday)), int)
+    i = 0
+    while i < len(data):
+        m = 0
+        n = 0
+        j = 0
+        while j < len(data[0]):
+            k = 0
+            while k < len(holiday):
+                if j == holiday[k]:
+                    #print(i, j, "HERE")
+                    hdata[i][m] = data[i][j]
+                    m += 1
+                else :
+                    nhdata[i][n] = data[i][j]
+                    n += 1
+                k += 1
+            j += 1
+        i += 1
+    #print(hdata, "THERE")
+    #data = []
+    #data = [hdata, nhdata]
+    return nhdata
 
 def checkTime(atime) :
     if atime % 100 > 60 :
@@ -119,43 +157,43 @@ def GetHistory(vd, data,datetime, predicttime, n_predict, n_mx, type_x,norsou) :
             data[loop]=data_file.iloc[line, :] #5分後,當下,5分前,10分前...的一整年level資料
         line=line-2
         loop=loop+1
-
-   
+    #div_data = data    #不考慮假日情況
+    div_data = checkHoliday(data)    #假日OR平日  
     i=0
-    while i<len(data[0]):
+    while i<len(div_data[0]):
 
-        if data[0][i]==1:  ##歷史資料中到達時間level==1
+        if div_data[0][i]==1:  ##歷史資料中到達時間level==1
             n_predict[0]=n_predict[0]+3
             j=0
             
             while j<7:
                 k=0
                 while k<3:
-                    if data[j+k+1][i]==type_x[j]:
+                    if div_data[j+k+1][i]==type_x[j]:
                         n_mx[0][j]=n_mx[0][j]+1
                     k=k+1
                 j=j+1
                 
-        if data[0][i]==2:  ##歷史資料中到達時間level==2
+        if div_data[0][i]==2:  ##歷史資料中到達時間level==2
             n_predict[1]=n_predict[1]+3
             j=0
             
             while j<7:
                 k=0
                 while k<3:
-                    if data[j+k+1][i]==type_x[j]:
+                    if div_data[j+k+1][i]==type_x[j]:
                         n_mx[1][j]=n_mx[1][j]+1
                     k=k+1
                 j=j+1   
                 
-        if data[0][i]==3:  ##歷史資料中到達時間level==3
+        if div_data[0][i]==3:  ##歷史資料中到達時間level==3
             n_predict[2]=n_predict[2]+3
             j=0
             
             while j<7:
                 k=0
                 while k<3:
-                    if data[j+k+1][i]==type_x[j]:
+                    if div_data[j+k+1][i]==type_x[j]:
                         n_mx[2][j]=n_mx[2][j]+1
                     k=k+1
                 j=j+1   
